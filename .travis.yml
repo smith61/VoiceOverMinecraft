@@ -3,6 +3,6 @@ jdk:
   - openjdk7
   - openjdk6
 
-install:
-  cd Parent
-  mvn install
+before-script:
+  - sudo apt-get install astyle
+  - cd Parent
