@@ -239,10 +239,10 @@
 	
 		<echo>Obfuscating source files.</echo>
 		<exec dir="${mcp.dir.root}" executable="cmd" osfamily="windows">
-			<arg line="/c reobfuscate.bat --client --config=${mcp.conf}" />
+			<arg line="/c reobfuscate_srg.bat --client" />
 		</exec>
 		<exec dir="${mcp.dir.root}" executable="sh" osfamily="unix">
-			<arg line="reobfuscate.sh --client --config=${mcp.conf}" />
+			<arg line="reobfuscate_srg.sh --client" />
 		</exec>
 		
 		<echo>Copying obfuscated files</echo>
