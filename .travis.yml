@@ -6,3 +6,5 @@ jdk:
 before-script:
   - sudo apt-get install astyle
   - cd Parent
+
+script: mvn
