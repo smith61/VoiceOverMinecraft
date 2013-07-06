@@ -194,7 +194,8 @@
 				importPackage(java.io);
 				importPackage(org.apache.tools.ant.util);
 			
-				var libraries = project.getProperty("compile.classpath").split(";");
+				var libraries = project.getProperty("compile.classpath").replaceAll(":", ";").split(";");
+				
 				var libraryFolder = new File(project.getProperty("mcp.dir.lib"));
 			
 				var fileUtils = FileUtils.getFileUtils();
