@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Parent" default="setupenv">
+	
+	<!-- Start Build Properties -->
+	
+	<property name="project.forge.dir" value="${basedir}/Forge" />
+	<property name="project.forge.ant" value="${project.forge.dir}/build.xml" />
+	
+	<!-- End Build Properties -->
+	
+	<target name="setupenv">
+		<ant antfile="${project.forge.ant}" dir="${project.forge.dir}" target="setupenv" />
+	</target>
+	
+	<target name="clean">
+		<ant antfile="${project.forge.ant}" dir="${project.forge.dir}" target="clean" />
+	</target>
+	
+</project>

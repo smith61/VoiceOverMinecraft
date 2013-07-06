@@ -4,3 +4,22 @@
 *.jar
 *.war
 *.ear
+
+# Maven Files #
+target/
+dependency-reduced-pom.xml
+
+# Forge Build Files #
+/Parent/Forge/temp/
+/Parent/Forge/libs/
+
+# Eclipse Files #
+*.log
+Workspace/
+
+
+# Mac OS X Files #
+.DS_Store
+.DS_Store?
+.Trashes
+.Spotlight-V100

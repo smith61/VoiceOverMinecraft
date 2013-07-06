@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="setupenv" name="Forge">
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+
+	<!-- 
+		Properties set from maven
+			build.maven - Value set if build is from maven
+			output.dir - Project output dir
+			source.dir - Project source dir
+			compile.classpath - Project classpath
+	-->
+	
+	
+	
+	<!-- Start Project Properties -->
+	
+	<property name="library.dir" value="${basedir}/libs" />
+	<property name="temp.dir" value="${basedir}/temp" />
+	<property name="build.dir" value="${temp.dir}/build" />
+	<property name="download.dir" value="${temp.dir}/download" />
+
+	<!-- End Project Properties -->
+	
+	
+	<!-- Start Minecraft Properties -->
+	
+	<property name="mc.version" value="1.6.1" />
+	<property name="mc.jar.deobf" value="${library.dir}/Minecraft-Deobf-${mc.version}.jar" />
+	
+	<!-- End Minecraft Properties -->
+	
+	
+	<!-- Start Forge Properties -->
+	
+	<property name="forge.version" value="8.9.0.768" />
+	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}" />
+	
+	<property name="forge.dir.root" value="${build.dir}/${forge.name}" />
+	<property name="forge.dir" value="${forge.dir.root}/forge" />
+	
+	<property name="forge.url" value="http://files.minecraftforge.net/${forge.name}.zip" />
+	
+	<available property="forge.exists" file="${forge.dir}" />
+	
+	<!-- End Forge Properties -->
+	
+	
+	<!-- Start MCP Properties -->
+	
+	<property name="mcp.dir.root" value="${forge.dir}/mcp" />
+	<property name="mcp.dir.src" value="${mcp.dir.root}/src/minecraft" />
+	<property name="mcp.dir.cleansrc" value="${mcp.dir.root}/src-clean" />
+	<property name="mcp.dir.reobf" value="${mcp.dir.root}/reobf/minecraft" />
+	<property name="mcp.dir.bin" value="${mcp.dir.root}/bin/minecraft" />
+	<property name="mcp.dir.lib" value="${mcp.dir.root}/lib" />
+	
+	<!-- End MCP Properties -->
+
+	
+	<!-- Start SoundSystem Properties -->
+	
+	<property name="ss.version" value="07JAN2012" />
+	<property name="ss.jar" value="${library.dir}/SoundSystem-${ss.version}.jar" />
+	
+	<property name="ss.temp.root" value="${temp.dir}/SoundSystem" />
+	<property name="ss.temp.src" value="${ss.temp.root}/src" />
+	<property name="ss.temp.jar" value="${ss.temp.root}/SoundSystem.jar" />
+	<property name="ss.temp.extract" value="${ss.temp.root}/extract" />
+	
+	<property name="ss.zip" value="${download.dir}/SoundSystem.zip" />
+	<property name="ss.url" value="http://www.paulscode.com/source/SoundSystem/${ss.version}/SoundSystem.zip" />
+	
+	<available property="ss.exists" file="${ss.jar}" />
+	
+	<!-- End SoundSystem Properties -->
+	
+	
+	<!-- Start Build Properties -->
+	
+	<condition property="mc.jar.exists">
+		<and>
+			<isset property="forge.exists"/>
+			<available file="${mc.jar.deobf}" />
+		</and>
+	</condition>
+	
+	<condition property="env.uptodate">
+		<and>
+			<isset property="forge.exists" />
+			<isset property="mc.jar.exists" />
+			<isset property="ss.exists" />
+		</and>
+	</condition>
+	
+	<!-- End Build Properties -->
+	
+	
+	<!-- Start Targets -->
+	
+	<target name="clean">
+		<delete dir="${temp.dir}" />
+		<delete dir="${library.dir}" />
+	</target>
+	
+	<target name="mkdirs">
+		<mkdir dir="${temp.dir}" />
+		<mkdir dir="${download.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${library.dir}" />
+	</target>
+	
+	<target name="download-files" depends="mkdirs">
+		<if>
+			<not><isset property="forge.exists" /></not>
+			<then>
+				<get src="${forge.url}" dest="${download.dir}" usetimestamp="True" />
+			</then>
+		</if>
+		<if>
+			<not><isset property="ss.exists" /></not>
+			<then>
+				<get src="${ss.url}" dest="${download.dir}" usetimestamp="True" />
+			</then>
+		</if>
+	</target>
+	
+	<target name="setupenv" depends="download-files" unless="env.uptodate">
+		<if>
+			<not><isset property="forge.exists" /></not>
+			<then>
+				<echo>Unzipping forge.</echo>
+				<unzip dest="${forge.dir.root}" src="${download.dir}/${forge.name}.zip" />
+				
+				<echo>Installing forge.</echo>
+				<exec dir="${forge.dir}" executable="cmd" osfamily="windows">
+					<arg line="/c install.cmd" />
+				</exec>
+				<exec dir="${forge.dir}" executable="sh" osfamily="unix">
+					<arg line="install.sh" />
+				</exec>
+				
+				<echo>Copying clean sources.</echo>
+				<copy todir="${mcp.dir.cleansrc}">
+					<fileset dir="${mcp.dir.src}" />
+				</copy>
+			</then>
+		</if>
+		<if>
+			<not><isset property="mc.jar.exists" /></not>
+			<then>
+				<echo>Jaring unobfuscated classes.</echo>
+				<jar destfile="${mc.jar.deobf}">
+					<fileset dir="${mcp.dir.bin}" />
+					<fileset dir="${mcp.dir.src}" />
+				</jar>
+			</then>
+		</if>
+		<if>
+			<not><isset property="ss.exists" /></not>
+			<then>
+				<echo>Extracting SoundSystem</echo>
+				<unzip dest="${ss.temp.root}" src="${ss.zip}" />
+				
+				<echo>Adding SoundSystem sources to jar</echo>
+				<unzip dest="${ss.temp.extract}" src="${ss.temp.jar}" />
+				<copy todir="${ss.temp.extract}">
+					<fileset dir="${ss.temp.src}" />
+				</copy>
+				<jar destfile="${ss.jar}" basedir="${ss.temp.extract}" />
+				
+			</then>
+		</if>
+	</target>
+	
+	<target name="mavenbuild">
+		<if>
+			<not><isset property="build.maven" /></not>
+			<then>
+				<fail>Task must be run from maven.</fail>
+			</then>
+		</if>
+	</target>
+	
+	<target name="compile" depends="mavenbuild,setupenv">
+		
+		<echo>Cleaning Libraries</echo>
+		<delete dir="${mcp.dir.lib}" />
+			
+		<echo>Copying Libraries</echo>
+		
+		<script language="javascript" setbeans="true">
+			<![CDATA[
+				importPackage(java.io);
+				importPackage(org.apache.tools.ant.util);
+			
+				var libraries = project.getProperty("compile.classpath").split(";");
+				var libraryFolder = new File(project.getProperty("mcp.dir.lib"));
+			
+				var fileUtils = FileUtils.getFileUtils();
+			
+				for(var i=0; i<libraries.length; i++) {
+					var library = new File(libraries[i]);
+					var libraryName = library.getName();
+			
+					if(libraryName.endsWith(".jar")) {
+						var echoTask = project.createTask("echo");
+						echoTask.setMessage("Copying library: " + library);
+						echoTask.perform();
+			
+						fileUtils.copyFile(library, new File(libraryFolder, libraryName));
+					}
+				}
+			]]>
+		</script>
+	
+		<echo>Cleaning src folder.</echo>
+		<delete dir="${mcp.dir.src}" />
+		<copy todir="${mcp.dir.src}">
+			<fileset dir="${mcp.dir.cleansrc}" />
+		</copy>
+		
+		<echo>Copying source files.</echo>
+		<copy todir="${mcp.dir.src}">
+			<fileset dir="${source.dir}" />
+		</copy>
+		
+		<echo>Compiling source files.</echo>
+		<exec dir="${mcp.dir.root}" executable="cmd" osfamily="windows">
+			<arg line="/c recompile.bat --client --config=${mcp.conf}" />
+		</exec>
+		<exec dir="${mcp.dir.root}" executable="sh" osfamily="unix">
+			<arg line="recompile.sh --client --config=${mcp.conf}" />
+		</exec>
+	</target>
+	
+	<target name="reobf" depends="compile">
+	
+		<echo>Obfuscating source files.</echo>
+		<exec dir="${mcp.dir.root}" executable="cmd" osfamily="windows">
+			<arg line="/c reobfuscate.bat --client --config=${mcp.conf}" />
+		</exec>
+		<exec dir="${mcp.dir.root}" executable="sh" osfamily="unix">
+			<arg line="reobfuscate.sh --client --config=${mcp.conf}" />
+		</exec>
+		
+		<echo>Copying obfuscated files</echo>
+		<copy todir="${output.dir}">
+			<fileset dir="${mcp.dir.reobf}">
+				<include name="**/*.class" />
+			</fileset>
+		</copy>
+	</target>
+</project>

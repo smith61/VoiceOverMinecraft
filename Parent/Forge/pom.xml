@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>VOM-Forge</artifactId>
+  <parent>
+  	<groupId>me.smith_61</groupId>
+  	<artifactId>VOM-Parent</artifactId>
+  	<version>1.0.0</version>
+  	<relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <properties>
+ 	<basedir>.</basedir>
+  	<lib.dir>${basedir}/libs</lib.dir>
+  	
+  	<mc.version>1.6.1</mc.version>
+  	<mc.jar.deobf>${lib.dir}/Minecraft-Deobf-${mc.version}.jar</mc.jar.deobf>
+  	
+  	<ss.version>07JAN2012</ss.version>
+  	<ss.jar>${lib.dir}/SoundSystem-${ss.version}.jar</ss.jar>
+  </properties>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+        	<artifactId>maven-antrun-plugin</artifactId>
+  			<executions>
+	  			<execution>
+		            <id>ant-reobf</id>
+		            <phase>prepare-package</phase>
+		            <goals>
+		              <goal>run</goal>
+		            </goals>
+		            <inherited>false</inherited>
+		            <configuration>
+		            	<target>
+		            		<property name="build.maven" value="true" />
+		            		
+		            		
+		            		<property name="compile.classpath" refid="maven.compile.classpath" />
+		            		<property name="output.dir" value="${project.build.outputDirectory}" />
+		            		<property name="source.dir" value="${project.build.sourceDirectory}" />
+		            		
+		            		<ant antfile="./build.xml" target="reobf" />
+		            	</target>
+		            </configuration>
+	        	</execution>
+  			</executions>
+  			<dependencies>
+  				<dependency>
+  					<groupId>ant-contrib</groupId>
+  					<artifactId>ant-contrib</artifactId>
+  					<version>20020829</version>
+  				</dependency>
+  			</dependencies>
+  		</plugin>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-shade-plugin</artifactId>
+  			<executions>
+  				<execution>
+  					<phase>package</phase>
+  					<goals>
+  						<goal>shade</goal>
+  					</goals>
+  					<configuration>
+  						<artifactSet>
+  							<includes>
+  								<include>${project.groupId}:VOM-Client</include>
+  								<include>${project.groupId}:VOM-Server</include>
+  								<include>${project.groupId}:VOM-Common</include>
+  							</includes>
+  						</artifactSet>
+  					</configuration>
+  				</execution>
+  			</executions>
+  		</plugin>
+  	</plugins>
+  </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>VOM-Server</artifactId>
+  		<version>${project.version}</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>VOM-Client</artifactId>
+  		<version>${project.version}</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>net.minecraft</groupId>
+  		<artifactId>Minecraft</artifactId>
+  		<version>${mc.version}</version>
+  		<scope>system</scope>
+  		<systemPath>${mc.jar.deobf}</systemPath>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.paulscode</groupId>
+  		<artifactId>SoundSystem</artifactId>
+  		<version>${ss.version}</version>
+  		<scope>system</scope>
+  		<systemPath>${ss.jar}</systemPath>
+  	</dependency>
+  </dependencies>
+</project>
