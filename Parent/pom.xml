@@ -9,6 +9,7 @@
   	<module>Server</module>
   	<module>Client</module>
   	<module>Forge</module>
+  	<module>Bukkit</module>
   </modules>
   
   <properties>
