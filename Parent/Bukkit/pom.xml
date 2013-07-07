@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>VOM-Bukkit</artifactId>
+  <parent>
+  	<groupId>me.smith_61</groupId>
+  	<artifactId>VOM-Parent</artifactId>
+  	<version>1.0.0</version>
+  	<relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <repositories>
+  	<repository>
+  		<id>bukkit-repo</id>
+  		<url>http://repo.bukkit.org/content/groups/public</url>
+  	</repository>
+  </repositories>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-shade-plugin</artifactId>
+  			
+  			<executions>
+  				<execution>
+  					<phase>package</phase>
+  					<goals>
+  						<goal>shade</goal>
+  					</goals>
+  					<configuration>
+  						<artifactSet>
+  							<includes>
+  								<include>${project.groupId}:VOM-Common</include>
+  								<include>${project.groupId}:VOM-Server</include>
+  							</includes>
+  						</artifactSet>
+  					</configuration>
+  				</execution>
+  			</executions>
+  		</plugin>
+  	</plugins>
+  </build>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>VOM-Server</artifactId>
+  		<version>${project.version}</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>VOM-Common</artifactId>
+  		<version>${project.version}</version>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.bukkit</groupId>
+  		<artifactId>bukkit</artifactId>
+  		<version>1.6.1-R0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+</project>
