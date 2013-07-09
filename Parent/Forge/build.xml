@@ -25,7 +25,7 @@
 	
 	<!-- Start Minecraft Properties -->
 	
-	<property name="mc.version" value="1.6.1" />
+	<property name="mc.version" value="1.6.2" />
 	<property name="mc.jar.deobf" value="${library.dir}/Minecraft-Deobf-${mc.version}.jar" />
 	
 	<!-- End Minecraft Properties -->
@@ -33,7 +33,7 @@
 	
 	<!-- Start Forge Properties -->
 	
-	<property name="forge.version" value="8.9.0.768" />
+	<property name="forge.version" value="9.10.0.779" />
 	<property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}" />
 	
 	<property name="forge.dir.root" value="${build.dir}/${forge.name}" />
